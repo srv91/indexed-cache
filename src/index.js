@@ -31,6 +31,9 @@ export default class IndexedCache {
       // Set to null for no expiry.
       expiry: 131400,
 
+      // Set version if required to purge browser cache
+      version: '',
+
       ...options
     }
     this.db = null
@@ -273,7 +276,11 @@ export default class IndexedCache {
   // Fetch an asset and cache it.
   _fetchObject (obj) {
     return new Promise((resolve, reject) => {
-      fetch(obj.src).then((r) => {
+      let url = obj.src
+      if (this.opt.version) {
+        url += '?v=' + this.opt.version
+      }
+      fetch(url).then((r) => {
         // HTTP request failed.
         if (!r.ok) {
           reject(new Error(`error fetching asset: ${r.status}`))
